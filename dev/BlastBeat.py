@@ -8,7 +8,7 @@ import sys
 
 def spreadNote (keys):
     letters = ['e', 't', 'a', 'o', 'n', 'i', 's', 'r', 'h', 'l', 'd', 'c', 'm', 'u', 'f', 'p', 'g', 'w', 'y', 'b', 'v', 'k', 'j', 'x', 'q', 'z']
-    
+
     tmpList = []
     for i in range (0, len (keys)):
         tmpList.append ([])
@@ -31,9 +31,7 @@ def getKeyList (instrument):
     }
     return switcher.get (instrument, [])
 
-def main(outputFile, inputFile, bpm, songLength, subdivision, pitchShift, scale):
-    print (pitchShift)
-    print (scale)
+def main(outputFile, inputFile, bpm, songLength, subdivisionString, pitchShiftString, scale):
     with MIDISetup(outputFile) as midi:
         with open(inputFile, "r") as file:
             data        = file.read().replace('\n', '').replace (' ', '')
@@ -43,6 +41,8 @@ def main(outputFile, inputFile, bpm, songLength, subdivision, pitchShift, scale)
             duration    = 1            # In beats
             tempo       = int (bpm)           # In BPM
             volume      = 100          # 0-127, as per the MIDI standard
+            subdivision = float(subdivisionString)
+            pitchShift = int(pitchShiftString)
 
             midi.addTempo(track, 0, tempo)
             midi.addProgramChange(track, 9, 0, 30)
@@ -89,5 +89,5 @@ def main(outputFile, inputFile, bpm, songLength, subdivision, pitchShift, scale)
                 midi.addNote(2, 1, note, time, 32, volume)
 
 
-# if __name__ == "__main__":
-#     main(sys.argv)
+if __name__ == "__main__":
+    main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6], sys.argv[7])

@@ -27,9 +27,9 @@ def main ():
     Radiobutton (root, text = "Pentatonic", variable = scale, value = "p").pack ()
     Radiobutton (root, text = "Blues", variable = scale, value = "b").pack ()
 
-    button = Button (root, text = "Blast Beat, Yo!", command = lambda: BlastBeat (outputFileEntry.get (), inputFileEntry.get (), int (bpmEntry.get ()),
-                                                                            int (songLengthEntry.get ()), float (subdivisionEntry.get ()),
-                                                                            int (pitchShiftEntry.get ()), scale.get ()))
+    button = Button (root, text = "Blast Beat, Yo!", command = lambda: BlastBeat (outputFileEntry.get (), inputFileEntry.get (), (bpmEntry.get ()),
+                                                                             (songLengthEntry.get ()),  (subdivisionEntry.get ()),
+                                                                             (pitchShiftEntry.get ()), scale.get ()))
 
     pitchShiftText.pack ()
     pitchShiftEntry.pack ()
