@@ -3,6 +3,7 @@ from MIDISetup import MIDISetup
 from BeatGenerator import BasicBeat, FillIn, HiHat
 from PitchGenerator import Pentatonic
 from Instrument import Drums, Pitch
+from ChordGenerator import ChordGenerator
 import sys
 
 def getKeyList (instrument):
@@ -38,10 +39,14 @@ def main(argv):
             ''' Guitar '''
             midi.addProgramChange(1, 0, 0, 30)
 
+            ''' Chords '''
+            midi.addProgramChange(2, 1, 0, 1)
+
 
         pitchShift = int (input ("Pitch Shift: "))
 
-
+        ''' Chords '''
+        chords = ChordGenerator(data, [], cooldown=16, pitchShift=pitchShift)
 
         ''' Drums '''
         closed_hit_hat = BasicBeat(data, Drums.closed_hi_hat.value, keyList = getKeyList (Drums.closed_hi_hat))
@@ -64,7 +69,9 @@ def main(argv):
             notes = next (pentatonic)
             for note in notes:
                 midi.addNote (1, 0, note + pitchShift, time, duration, volume)
-            
+            chord = next(chords)
+            for note in chord:
+                midi.addNote(2, 1, note, time, 32, volume)
 
 
 if __name__ == "__main__":

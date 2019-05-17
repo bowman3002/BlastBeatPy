@@ -6,7 +6,7 @@ class MIDISetup:
         self.outputFileName = outputFileName
 
     def __enter__(self):
-        self.midi = MIDIFile(2)  # One track, defaults to format 1 (tempo track is created
+        self.midi = MIDIFile(3)  # One track, defaults to format 1 (tempo track is created
         return self.midi
 
     def __exit__(self, type, value, traceback):
