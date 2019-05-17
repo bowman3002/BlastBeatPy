@@ -6,3 +6,4 @@ class Drums (enum.Enum):
     closed_hi_hat = 42
     open_hi_hat = 46
     ride = 51
+    fillIn = [[snare], [snare], [snare], [ride]]

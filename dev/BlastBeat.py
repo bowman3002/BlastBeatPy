@@ -1,6 +1,6 @@
 from midiutil import MIDIFile
 from MIDISetup import MIDISetup
-from BeatGenerator import BasicBeat
+from BeatGenerator import BasicBeat, FillIn
 from Drums import Drums
 import sys
 
@@ -20,9 +20,9 @@ def main(argv):
             channel     = 9
             maxTime     = int(sys.argv[3])  # In beats
             duration    = 1            # In beats
-            tempo       = 60           # In BPM
+            tempo       = int (sys.argv[4])           # In BPM
             volume      = 100          # 0-127, as per the MIDI standard
-            subdivision = 0.125        # 32nd notes
+            subdivision = int (sys.argv[5])  # 32nd notes
 
             midi.addTempo(track, 0, tempo)
             midi.addProgramChange(track, 9, 0, 30)
@@ -30,16 +30,16 @@ def main(argv):
         closed_hit_hat = BasicBeat(data, Drums.closed_hi_hat.value, keyList = getKeyList (Drums.closed_hi_hat))
         snare = BasicBeat(data, Drums.snare.value, keyList = getKeyList (Drums.snare))
         bass_drum = BasicBeat(data, Drums.bass_drum.value, keyList = getKeyList (Drums.bass_drum))
-        #fillIn = BasicBeat (data, Drums.fillIn)
+        fillIn = FillIn (data, Drums.fillIn.value)
         
-        generators = [closed_hit_hat, snare, bass_drum]
+        generators = [closed_hit_hat, snare, bass_drum, fillIn]
         for beat in range(0, int(maxTime / subdivision)):
             time = beat * subdivision
 
             for generator in generators:
-                value = next(generator)
-                if value != -1:
-                    midi.addNote(track, channel, value, time, duration, volume)
+                notes = next(generator)
+                for note in notes:
+                    midi.addNote(track, channel, note, time, duration, volume)
 
 
 if __name__ == "__main__":
