@@ -1,14 +1,22 @@
 from midiutil import MIDIFile
 from MIDISetup import MIDISetup
 from BeatGenerator import BasicBeat, FillIn
-from Drums import Drums
+from PitchGenerator import Pentatonic
+from Instrument import Drums, Pitch
 import sys
 
 def getKeyList (instrument):
+    ''' e t a o n i s r h l d c m u f p g w y b v k j x q z '''
     switcher = {
         Drums.bass_drum: ['e', 'o', 's', 'l', 'u', 'p', 'y', 'k', 'q', 'd'],
         Drums.closed_hi_hat: ['t', 'i', 'r', 'd', 'm', 'g', 'b', 'x', 'z'],
-        Drums.snare: ['a', 'n', 'h', 'c', 'f', 'w', 'v', 'j', 'i']
+        Drums.snare: ['a', 'n', 'h', 'c', 'f', 'w', 'v', 'j', 'i'],
+        "Pentatonic": {Pitch.C.value: ['e', 'i', 'd', 'p', 'v', 'z'],
+                    Pitch.D.value: ['t', 's', 'c', 'g', 'k'],
+                    Pitch.E.value: ['a', 'r', 'm', 'w', 'j'],
+                    Pitch.G.value: ['o', 'h', 'u', 'y', 'x'],
+                    Pitch.A.value: ['n', 'l', 'f', 'b', 'q']
+                    }
     }
     return switcher.get (instrument, [])
 
@@ -22,15 +30,27 @@ def main(argv):
             duration    = 1            # In beats
             tempo       = int (sys.argv[4])           # In BPM
             volume      = 100          # 0-127, as per the MIDI standard
-            subdivision = int (sys.argv[5])  # 32nd notes
+            subdivision = float (sys.argv[5])  # 32nd notes
 
             midi.addTempo(track, 0, tempo)
             midi.addProgramChange(track, 9, 0, 30)
 
+            ''' Guitar '''
+            midi.addProgramChange(1, 0, 0, 30)
+
+
+        pitchShift = int (input ("Pitch Shift: "))
+
+
+
+        ''' Drums '''
         closed_hit_hat = BasicBeat(data, Drums.closed_hi_hat.value, keyList = getKeyList (Drums.closed_hi_hat))
         snare = BasicBeat(data, Drums.snare.value, keyList = getKeyList (Drums.snare))
         bass_drum = BasicBeat(data, Drums.bass_drum.value, keyList = getKeyList (Drums.bass_drum))
         fillIn = FillIn (data, Drums.fillIn.value)
+
+        ''' Pitch '''
+        pentatonic = Pentatonic (data, 0, pitches = getKeyList ("Pentatonic"))
         
         generators = [closed_hit_hat, snare, bass_drum, fillIn]
         for beat in range(0, int(maxTime / subdivision)):
@@ -40,6 +60,10 @@ def main(argv):
                 notes = next(generator)
                 for note in notes:
                     midi.addNote(track, channel, note, time, duration, volume)
+            notes = next (pentatonic)
+            for note in notes:
+                midi.addNote (1, 0, note + pitchShift, time, duration, volume)
+            
 
 
 if __name__ == "__main__":
