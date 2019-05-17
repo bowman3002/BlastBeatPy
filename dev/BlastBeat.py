@@ -23,9 +23,9 @@ def main(argv):
                 time = beat * subdivision
 
                 for generator in generators:
-                    value = next(generator)
-                    if value != -1:
-                        midi.addNote(track, channel, value, time, duration, volume)
+                    notes = next(generator)
+                    for note in notes
+                        midi.addNote(track, channel, note, time, duration, volume)
 
 
 if __name__ == "__main__":
