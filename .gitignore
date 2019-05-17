@@ -1,2 +1,4 @@
 env
 *.mid
+dev/test.py
+__pycache__
