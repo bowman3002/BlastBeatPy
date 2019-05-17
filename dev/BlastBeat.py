@@ -48,17 +48,12 @@ def main(argv):
         snare = BasicBeat(data, Drums.snare.value, keyList = getKeyList (Drums.snare))
         bass_drum = BasicBeat(data, Drums.bass_drum.value, keyList = getKeyList (Drums.bass_drum))
         fillIn = FillIn (data, Drums.fillIn.value)
-<<<<<<< HEAD
+        hiHat = HiHat(data, [], cooldown=1, keylist=['a', 'i'], default=Drums.open_hi_hat.value, closed=Drums.closed_hi_hat.value)
 
         ''' Pitch '''
         pentatonic = Pentatonic (data, 0, pitches = getKeyList ("Pentatonic"))
-        
-        generators = [closed_hit_hat, snare, bass_drum, fillIn]
-=======
-        hiHat = HiHat(data, [], cooldown=1, keylist=['a', 'i'], default=Drums.open_hi_hat.value, closed=Drums.closed_hi_hat.value)
 
         generators = [hiHat, snare, bass_drum, fillIn]
->>>>>>> 1046c62ecb4c7daf93516b015d8c7e445a749a00
         for beat in range(0, int(maxTime / subdivision)):
             time = beat * subdivision
 
