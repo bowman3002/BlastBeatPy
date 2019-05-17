@@ -1,12 +1,21 @@
 from midiutil import MIDIFile
 from MIDISetup import MIDISetup
 from BeatGenerator import BasicBeat
+from Drums import Drums
 import sys
+
+def getKeyList (instrument):
+    switcher = {
+        Drums.bass_drum: ['e', 'o', 's', 'l', 'u', 'p', 'y', 'k', 'q', 'd'],
+        Drums.closed_hi_hat: ['t', 'i', 'r', 'd', 'm', 'g', 'b', 'x', 'z'],
+        Drums.snare: ['a', 'n', 'h', 'c', 'f', 'w', 'v', 'j', 'i']
+    }
+    return switcher.get (instrument, [])
 
 def main(argv):
     with MIDISetup(sys.argv[1]) as midi:
         with open(sys.argv[2], "r") as file:
-            data        = file.read().replace('\n', '')
+            data        = file.read().replace('\n', '').replace (' ', '')
             track       = 0
             channel     = 9
             maxTime     = int(sys.argv[3])  # In beats
@@ -18,14 +27,19 @@ def main(argv):
             midi.addTempo(track, 0, tempo)
             midi.addProgramChange(track, 9, 0, 30)
 
-            generators = []
-            for beat in range(0, int(maxTime / subdivision)):
-                time = beat * subdivision
+        closed_hit_hat = BasicBeat(data, Drums.closed_hi_hat.value, keyList = getKeyList (Drums.closed_hi_hat))
+        snare = BasicBeat(data, Drums.snare.value, keyList = getKeyList (Drums.snare))
+        bass_drum = BasicBeat(data, Drums.bass_drum.value, keyList = getKeyList (Drums.bass_drum))
+        #fillIn = BasicBeat (data, Drums.fillIn)
+        
+        generators = [closed_hit_hat, snare, bass_drum]
+        for beat in range(0, int(maxTime / subdivision)):
+            time = beat * subdivision
 
-                for generator in generators:
-                    value = next(generator)
-                    if value != -1:
-                        midi.addNote(track, channel, value, time, duration, volume)
+            for generator in generators:
+                value = next(generator)
+                if value != -1:
+                    midi.addNote(track, channel, value, time, duration, volume)
 
 
 if __name__ == "__main__":

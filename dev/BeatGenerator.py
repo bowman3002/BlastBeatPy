@@ -1,6 +1,5 @@
-def BasicBeat(seed, note, keyList, offValue, onValue):
+def BasicBeat(seed, onValue, **opt):
     index = 0
-    seedList = list(seed)
     while True:
-        yield onValue if (seed[index % len(seed)] in keyList) else offValue
+        yield onValue if (seed[index % len(seed)] in opt["keyList"]) else -1
         index += 1
