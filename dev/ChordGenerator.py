@@ -69,7 +69,6 @@ def ChordGenerator(seed, onValue, **opt):
             chordNum = (chordNum + 1) % 8
             if chordNum == 0:
                 root = 0
-                print("RESET TO ROOT")
             else:
                 root = random.randint(0, len(chords) - 1)
 
