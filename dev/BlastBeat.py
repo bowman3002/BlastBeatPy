@@ -16,5 +16,5 @@ MyMIDI.addTempo(track, time, tempo)
 for i in range(33, 81):
     MyMIDI.addNote(track, channel, i, time + i, duration, volume)
 
-with open("major-scale.mid", "wb") as output_file:
+with open("BlastBeat.mid", "wb") as output_file:
     MyMIDI.writeFile(output_file)
