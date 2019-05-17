@@ -51,6 +51,7 @@ opt:
     closed:int          The closed value to use
 '''
 def ChordGenerator(seed, onValue, **opt):
+    chordNum = 0
     currentCooldown = 0
     chords = makeChordsInKey(cScale)
     root = 0
@@ -65,6 +66,12 @@ def ChordGenerator(seed, onValue, **opt):
         else:
             yield []
             currentCooldown -= 1
-            root = random.randint(0, len(chords) - 1)
+            chordNum = (chordNum + 1) % 8
+            if chordNum == 0:
+                root = 0
+                print("RESET TO ROOT")
+            else:
+                root = random.randint(0, len(chords) - 1)
+
             chord = random.randint(0, len(chords[root]) - 1)
 
