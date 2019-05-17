@@ -1,19 +1,30 @@
 from midiutil import MIDIFile
+from MIDISetup import MIDISetup
+from BeatGenerator import BasicBeat
+import sys
 
-track    = 0
-channel  = 9
-time     = 0    # In beats
-duration = 1    # In beats
-tempo    = 60   # In BPM
-volume   = 100  # 0-127, as per the MIDI standard
+def main(argv):
+    with MIDISetup(sys.argv[1]) as midi:
+        track       = 0
+        channel     = 9
+        maxTime     = int(sys.argv[2])  # In beats
+        duration    = 1            # In beats
+        tempo       = 60           # In BPM
+        volume      = 100          # 0-127, as per the MIDI standard
+        subdivision = 0.125        # 32nd notes
 
-MyMIDI = MIDIFile(1)  # One track, defaults to format 1 (tempo track is created
-                      # automatically)
-MyMIDI.addTempo(track, time, tempo)
-MyMIDI.addProgramChange(track, 9, 0, 30)
+        midi.addTempo(track, 0, tempo)
+        midi.addProgramChange(track, 9, 0, 30)
 
-for i in range(33, 81):
-    MyMIDI.addNote(track, channel, i, time + i - 33, duration, volume)
+        generators = []
+        for beat in range(0, int(maxTime / subdivision)):
+            time = beat * subdivision
 
-with open("BlastBeat.mid", "wb") as output_file:
-    MyMIDI.writeFile(output_file)
+            for generator in generators:
+                value = next(generator)
+                if value != -1:
+                    midi.addNote(track, channel, value, time, duration, volume)
+
+
+if __name__ == "__main__":
+    main(sys.argv)
