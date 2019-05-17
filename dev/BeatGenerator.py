@@ -13,3 +13,25 @@ def FillIn (seed, onValue, **opt):
         else:
             yield []
             index +=1
+
+'''
+opt:
+    cooldown:int        The amount of beats to wait before playing again
+    keylist:[String]    The list of keys which close the hihat
+    default:int         The default value to use
+    closed:int          The closed value to use
+'''
+def HiHat(seed, onValue, **opt):
+    index = 0
+    currentCooldown = 0
+    cooldown = opt['cooldown']
+    keyList = opt['keylist']
+    while True:
+        if currentCooldown == 0:
+            currentCooldown = cooldown
+            index += 1
+            yield [opt['default']] if (seed[index % len(seed)] in keyList) else [opt['closed']]
+        else:
+            index += 1
+            yield []
+            currentCooldown -= 1

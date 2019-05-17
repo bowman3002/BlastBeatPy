@@ -1,6 +1,6 @@
 from midiutil import MIDIFile
 from MIDISetup import MIDISetup
-from BeatGenerator import BasicBeat, FillIn
+from BeatGenerator import BasicBeat, FillIn, HiHat
 from Drums import Drums
 import sys
 
@@ -22,7 +22,7 @@ def main(argv):
             duration    = 1            # In beats
             tempo       = int (sys.argv[4])           # In BPM
             volume      = 100          # 0-127, as per the MIDI standard
-            subdivision = int (sys.argv[5])  # 32nd notes
+            subdivision = float (sys.argv[5])  # 32nd notes
 
             midi.addTempo(track, 0, tempo)
             midi.addProgramChange(track, 9, 0, 30)
@@ -31,8 +31,9 @@ def main(argv):
         snare = BasicBeat(data, Drums.snare.value, keyList = getKeyList (Drums.snare))
         bass_drum = BasicBeat(data, Drums.bass_drum.value, keyList = getKeyList (Drums.bass_drum))
         fillIn = FillIn (data, Drums.fillIn.value)
-        
-        generators = [closed_hit_hat, snare, bass_drum, fillIn]
+        hiHat = HiHat(data, [], cooldown=1, keylist=['a', 'i'], default=Drums.open_hi_hat.value, closed=Drums.closed_hi_hat.value)
+
+        generators = [hiHat, snare, bass_drum, fillIn]
         for beat in range(0, int(maxTime / subdivision)):
             time = beat * subdivision
 
