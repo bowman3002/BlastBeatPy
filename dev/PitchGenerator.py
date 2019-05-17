@@ -1,3 +1,8 @@
+'''
+opt:
+    pitches: {int, [char]} Key: the value of each pitch, Value: keyList
+'''
+
 def Pentatonic (seed, onValue, **opt):
     index = 0
     while True:

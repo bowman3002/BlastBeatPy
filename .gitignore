@@ -2,3 +2,4 @@ env
 *.mid
 dev/test.py
 __pycache__
+output
