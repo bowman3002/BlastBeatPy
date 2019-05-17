@@ -9,4 +9,6 @@ To install dependencies
 
 
 To run:
-    python3 BlastBeat.py [Output File Name] [Input File Name] [Song Length in Beats] [bpm] [subdivision]
+    python ui.py
+
+    tkinter must be installed to run
