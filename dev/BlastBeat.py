@@ -1,9 +1,25 @@
 from midiutil import MIDIFile
 from MIDISetup import MIDISetup
 from BeatGenerator import BasicBeat, FillIn, HiHat
-from PitchGenerator import Pentatonic
+from PitchGenerator import BasicPitch
 from Instrument import Drums, Pitch
 import sys
+
+def spreadNote (keys):
+    letters = ['e', 't', 'a', 'o', 'n', 'i', 's', 'r', 'h', 'l', 'd', 'c', 'm', 'u', 'f', 'p', 'g', 'w', 'y', 'b', 'v', 'k', 'j', 'x', 'q', 'z']
+    
+    tmpList = []
+    for i in range (0, len (keys)):
+        tmpList.append ([])
+
+    for i in range (0, len (letters)):
+        tmpList[i % len (keys)].append (letters[i])
+
+    keyList ={}
+    for i in range (0, len (tmpList)):
+        keyList[keys[i].value] = tmpList[i]
+
+    return keyList
 
 def getKeyList (instrument):
     ''' e t a o n i s r h l d c m u f p g w y b v k j x q z '''
@@ -11,37 +27,28 @@ def getKeyList (instrument):
         Drums.bass_drum: ['e', 'o', 's', 'l', 'u', 'p', 'y', 'k', 'q', 'd'],
         Drums.closed_hi_hat: ['t', 'i', 'r', 'd', 'm', 'g', 'b', 'x', 'z'],
         Drums.snare: ['a', 'n', 'h', 'c', 'f', 'w', 'v', 'j', 'i'],
-        "Pentatonic": {Pitch.C.value: ['e', 'i', 'd', 'p', 'v', 'z'],
-                    Pitch.D.value: ['t', 's', 'c', 'g', 'k'],
-                    Pitch.E.value: ['a', 'r', 'm', 'w', 'j'],
-                    Pitch.G.value: ['o', 'h', 'u', 'y', 'x'],
-                    Pitch.A.value: ['n', 'l', 'f', 'b', 'q']
-                    }
     }
     return switcher.get (instrument, [])
 
-def main(argv):
-    with MIDISetup(sys.argv[1]) as midi:
-        with open(sys.argv[2], "r") as file:
+def main(outputFile, inputFile, bpm, songLength, subdivision, pitchShift, scale):
+    print (pitchShift)
+    print (scale)
+    with MIDISetup(outputFile) as midi:
+        with open(inputFile, "r") as file:
             data        = file.read().replace('\n', '').replace (' ', '')
             track       = 0
             channel     = 9
-            maxTime     = int(sys.argv[3])  # In beats
+            maxTime     = int(songLength)  # In beats
             duration    = 1            # In beats
-            tempo       = int (sys.argv[4])           # In BPM
+            tempo       = int (bpm)           # In BPM
             volume      = 100          # 0-127, as per the MIDI standard
-            subdivision = float (sys.argv[5])  # 32nd notes
 
             midi.addTempo(track, 0, tempo)
             midi.addProgramChange(track, 9, 0, 30)
 
             ''' Guitar '''
-            midi.addProgramChange(1, 0, 0, 30)
-
-
-        pitchShift = int (input ("Pitch Shift: "))
-
-
+            guitar = 30 if scale == "p" else 26
+            midi.addProgramChange(1, 0, 0, guitar)
 
         ''' Drums '''
         closed_hit_hat = BasicBeat(data, Drums.closed_hi_hat.value, keyList = getKeyList (Drums.closed_hi_hat))
@@ -51,7 +58,12 @@ def main(argv):
         hiHat = HiHat(data, [], cooldown=1, keylist=['a', 'i'], default=Drums.open_hi_hat.value, closed=Drums.closed_hi_hat.value)
 
         ''' Pitch '''
-        pentatonic = Pentatonic (data, 0, pitches = getKeyList ("Pentatonic"))
+        #pentatonic = Pentatonic (data, 0, pitches = getKeyList ("Pentatonic"))
+        #blues = Pentatonic (data, 0, pitches = spreadNote ([Pitch.C, Pitch.D, Pitch.Eb, Pitch.E, Pitch.G, Pitch.A]))
+        pitches = [Pitch.C, Pitch.D, Pitch.E, Pitch.G, Pitch.A]
+        if scale == "b":
+            pitches.insert (2, Pitch.Eb)
+        guitar = BasicPitch (data, 0, pitches = spreadNote (pitches))
 
         generators = [hiHat, snare, bass_drum, fillIn]
         for beat in range(0, int(maxTime / subdivision)):
@@ -61,11 +73,12 @@ def main(argv):
                 notes = next(generator)
                 for note in notes:
                     midi.addNote(track, channel, note, time, duration, volume)
-            notes = next (pentatonic)
+
+            notes = next (guitar)
             for note in notes:
                 midi.addNote (1, 0, note + pitchShift, time, duration, volume)
             
 
 
-if __name__ == "__main__":
-    main(sys.argv)
+# if __name__ == "__main__":
+#     main(sys.argv)

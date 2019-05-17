@@ -12,7 +12,7 @@ def FillIn (seed, onValue, **opt):
                 yield notes
         else:
             yield []
-            index +=1
+        index +=1
 
 '''
 opt:

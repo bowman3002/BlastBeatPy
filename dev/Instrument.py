@@ -12,6 +12,7 @@ class Drums (enum.Enum):
 class Pitch (enum.Enum):
     C = 60
     D = 62
+    Eb = 63
     E = 64
     F = 65
     G = 67
